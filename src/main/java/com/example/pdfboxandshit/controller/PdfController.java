@@ -8,8 +8,6 @@ import org.springframework.web.multipart.MultipartFile;
 import com.example.pdfboxandshit.service.PdfService;
 
 import java.io.IOException;
-import java.util.Map;
-
 @RestController
 @RequestMapping("/pdf")
 public class PdfController {
@@ -34,20 +32,6 @@ public class PdfController {
         }
     }
 
-    @PostMapping("/retrieveInfo")
-    public ResponseEntity<String> retrieveType(@RequestParam("file") MultipartFile file) {
-        String text = pdfService.retrieveType(file);
-
-        return ResponseEntity.ok(text);
-    }
-
-    @PostMapping("/retrieveSize")
-    public ResponseEntity<String> retrieveSize(@RequestParam("file") MultipartFile file) {
-        String size = pdfService.retrieveSize(file);
-
-        return ResponseEntity.ok(size);
-    }
-
     @GetMapping("/test")
     public ResponseEntity<String> test() {
 
@@ -63,7 +47,7 @@ public class PdfController {
             return pdfService.parsePdf(file);
         } catch (IOException e) {
 
-            System.out.println("Oshibka blyat!!");
+            System.out.println("Parsing error!");
 
             return null;
         }

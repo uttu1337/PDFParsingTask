@@ -129,18 +129,4 @@ public class PdfParser {
             }
         }
     }
-
-    private String extractBetween(String text, String start, String end) {
-
-        int startIndex = text.indexOf(start);
-        int endIndex = text.indexOf(end);
-
-        if (startIndex == -1 || endIndex == -1 || startIndex > endIndex) {
-            return null;
-        }
-
-        startIndex += start.length();
-
-        return text.substring(startIndex, endIndex).trim();
-    }
 }

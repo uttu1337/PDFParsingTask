@@ -4,22 +4,23 @@ import lombok.Builder;
 import lombok.Data;
 
 import java.time.LocalDate;
-import java.util.UUID;
 
 @Data
 @Builder
 public class ParsedPdfModel {
 
-    private UUID id;
+
+    private Long fileSize;
+
+    private String fileExtension;
 
     private String lastName;
     private String firstName;
     private String patronymic;
-
     private LocalDate birthDate;
     private String taxpayerIdentificationNumber;
-    private int documentType;
-    private int seriesAndNumber;
+    private Integer documentType;
+    private Long seriesAndNumber;
 
     private String eSignatureValue;
     private String eSignatureOwner;

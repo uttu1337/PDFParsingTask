@@ -2,6 +2,8 @@ package com.example.pdfboxandshit.mapper.impl;
 
 import com.example.pdfboxandshit.dto.ParsePdfDto;
 import com.example.pdfboxandshit.mapper.ParsedPdfMapper;
+import com.example.pdfboxandshit.model.ParsedPdfModel;
+import com.example.pdfboxandshit.repository.entity.ParsedPdfEntity;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
@@ -34,4 +36,43 @@ public class ParsedPdfMapperImpl implements ParsedPdfMapper {
 
     }
 
+    @Override
+    public ParsedPdfModel DtoToModel(ParsePdfDto dto) {
+
+        return ParsedPdfModel.builder()
+                .fileSize(dto.getFileSize())
+                .fileExtension(dto.getFileExtension())
+                .firstName(dto.getFirstName())
+                .lastName(dto.getLastName())
+                .patronymic(dto.getPatronymic())
+                .birthDate(dto.getBirthDate())
+                .taxpayerIdentificationNumber(dto.getTaxpayerIdentificationNumber())
+                .documentType(dto.getDocumentType())
+                .seriesAndNumber(dto.getSeriesAndNumber())
+                .eSignatureValue(dto.getESignatureValue())
+                .eSignatureOwner(dto.getESignatureOwner())
+                .productionDate(dto.getProductionDate())
+                .expirationDate(dto.getExpirationDate())
+                .build();
+    }
+
+    @Override
+    public ParsedPdfEntity ModelToEntity(ParsedPdfModel model) {
+
+        return ParsedPdfEntity.builder()
+                .fileSize(model.getFileSize())
+                .fileExtension(model.getFileExtension())
+                .firstName(model.getFirstName())
+                .lastName(model.getLastName())
+                .patronymic(model.getPatronymic())
+                .birthDate(model.getBirthDate())
+                .taxpayerIdentificationNumber(model.getTaxpayerIdentificationNumber())
+                .documentType(model.getDocumentType())
+                .seriesAndNumber(model.getSeriesAndNumber())
+                .eSignatureValue(model.getESignatureValue())
+                .eSignatureOwner(model.getESignatureOwner())
+                .productionDate(model.getProductionDate())
+                .expirationDate(model.getExpirationDate())
+                .build();
+    }
 }

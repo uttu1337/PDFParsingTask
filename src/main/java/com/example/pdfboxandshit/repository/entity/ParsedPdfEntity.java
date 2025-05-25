@@ -11,7 +11,7 @@ import java.util.UUID;
 
 @Data
 @Builder
-@Table(name = "")
+@Table(name = "documents")
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
@@ -21,14 +21,17 @@ public class ParsedPdfEntity {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
+    private Long fileSize;
+    private String fileExtension;
+
     private String lastName;
     private String firstName;
     private String patronymic;
 
     private LocalDate birthDate;
     private String taxpayerIdentificationNumber;
-    private int documentType;
-    private int seriesAndNumber;
+    private Integer documentType;
+    private Long seriesAndNumber;
 
     private String eSignatureValue;
     private String eSignatureOwner;

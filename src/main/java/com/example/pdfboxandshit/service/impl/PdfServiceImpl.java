@@ -1,7 +1,9 @@
 package com.example.pdfboxandshit.service.impl;
 
 import com.example.pdfboxandshit.dto.ParsePdfDto;
+import com.example.pdfboxandshit.model.ParsedPdfModel;
 import com.example.pdfboxandshit.parser.PdfParser;
+import com.example.pdfboxandshit.repository.ParsePdfRepository;
 import lombok.RequiredArgsConstructor;
 import com.example.pdfboxandshit.mapper.ParsedPdfMapper;
 import org.apache.pdfbox.pdmodel.PDDocument;
@@ -24,6 +26,9 @@ public class PdfServiceImpl implements PdfService {
     @Autowired
     private ParsedPdfMapper parsedPdfMapper;
 
+    @Autowired
+    private final ParsePdfRepository parsePdfRepository;
+
     @Override
     public String getFullText(MultipartFile file) throws IOException {
 
@@ -38,6 +43,10 @@ public class PdfServiceImpl implements PdfService {
     public ParsePdfDto parsePdf(MultipartFile file) throws IOException {
         Map<String, String> parsedMap = pdfParser.parsePdf(file);
 
-        return parsedPdfMapper.MapToDto(parsedMap);
+        ParsePdfDto dto = parsedPdfMapper.MapToDto(parsedMap);
+        ParsedPdfModel model = parsedPdfMapper.DtoToModel(dto);
+        parsePdfRepository.save(parsedPdfMapper.ModelToEntity(model));
+
+        return dto;
     }
 }
