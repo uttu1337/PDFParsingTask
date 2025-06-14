@@ -1,9 +1,9 @@
-package com.example.pdfboxandshit.mapper.impl;
+package com.example.pdfparsingtask.mapper.impl;
 
-import com.example.pdfboxandshit.dto.ParsePdfDto;
-import com.example.pdfboxandshit.mapper.ParsedPdfMapper;
-import com.example.pdfboxandshit.model.ParsedPdfModel;
-import com.example.pdfboxandshit.repository.entity.ParsedPdfEntity;
+import com.example.pdfparsingtask.dto.ParsePdfDto;
+import com.example.pdfparsingtask.mapper.ParsedPdfMapper;
+import com.example.pdfparsingtask.model.ParsedPdfModel;
+import com.example.pdfparsingtask.repository.entity.ParsedPdfEntity;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
@@ -13,10 +13,9 @@ import java.util.Map;
 @Component
 public class ParsedPdfMapperImpl implements ParsedPdfMapper {
 
+    private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
     @Override
     public ParsePdfDto MapToDto(Map<String, String> map) {
-
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
 
         return ParsePdfDto.builder()
                 .fileSize(Long.parseLong(map.get("fileSize")))
@@ -24,14 +23,14 @@ public class ParsedPdfMapperImpl implements ParsedPdfMapper {
                 .firstName(map.get("firstName"))
                 .lastName(map.get("lastName"))
                 .patronymic(map.get("patronymic"))
-                .birthDate(LocalDate.parse(map.get("birthDate").replaceAll("[^0-9.]", ""), formatter))
+                .birthDate(LocalDate.parse(clearDate(map.get("birthDate")), formatter))
                 .taxpayerIdentificationNumber(map.get("taxpayerIdentificationNumber"))
                 .documentType(Integer.parseInt(map.get("documentType")))
                 .seriesAndNumber(Long.parseLong(map.get("seriesAndNumber")))
                 .eSignatureValue(map.get("eSignatureValue"))
                 .eSignatureOwner(map.get("eSignatureOwner"))
-                .productionDate(LocalDate.parse(map.get("productionDate").replaceAll("[^0-9.]", ""), formatter))
-                .expirationDate(LocalDate.parse(map.get("expirationDate").replaceAll("[^0-9.]", ""), formatter))
+                .productionDate(LocalDate.parse(clearDate(map.get("productionDate")), formatter))
+                .expirationDate(LocalDate.parse(clearDate(map.get("expirationDate")), formatter))
                 .build();
 
     }
@@ -74,5 +73,10 @@ public class ParsedPdfMapperImpl implements ParsedPdfMapper {
                 .productionDate(model.getProductionDate())
                 .expirationDate(model.getExpirationDate())
                 .build();
+    }
+
+    private static String clearDate(String raw) {
+
+        return raw == null ? null : raw.replaceAll("[^0-9.]", "");
     }
 }

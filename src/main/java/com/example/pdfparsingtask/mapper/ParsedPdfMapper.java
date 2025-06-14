@@ -1,8 +1,8 @@
-package com.example.pdfboxandshit.mapper;
+package com.example.pdfparsingtask.mapper;
 
-import com.example.pdfboxandshit.dto.ParsePdfDto;
-import com.example.pdfboxandshit.model.ParsedPdfModel;
-import com.example.pdfboxandshit.repository.entity.ParsedPdfEntity;
+import com.example.pdfparsingtask.dto.ParsePdfDto;
+import com.example.pdfparsingtask.model.ParsedPdfModel;
+import com.example.pdfparsingtask.repository.entity.ParsedPdfEntity;
 
 import java.util.Map;
 
