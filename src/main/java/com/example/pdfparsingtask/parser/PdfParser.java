@@ -1,4 +1,4 @@
-package com.example.pdfboxandshit.parser;
+package com.example.pdfparsingtask.parser;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
@@ -14,9 +14,7 @@ public class PdfParser {
 
     public Map<String, String> parsePdf(MultipartFile file) throws IOException {
 
-        PDDocument document = PDDocument.load(file.getInputStream());
-        PDFTextStripper stripper = new PDFTextStripper();
-        String text = stripper.getText(document);
+        String text = getFullText(file);
         Map<String, String> result = new HashMap<>();
 
         result.put("fileExtension", getExtension(file));
@@ -28,18 +26,19 @@ public class PdfParser {
 
     public String getFullText(MultipartFile file) throws IOException {
 
-        PDDocument document = PDDocument.load(file.getInputStream());
-        PDFTextStripper stripper = new PDFTextStripper();
+        try (PDDocument document = PDDocument.load(file.getInputStream())) {
+            PDFTextStripper stripper = new PDFTextStripper();
 
-        return stripper.getText(document);
+            return stripper.getText(document);
+        }
     }
 
     private String getExtension(MultipartFile file) {
 
         String fileName = file.getOriginalFilename();
-        int i = fileName.lastIndexOf('.');
+        int dotPosition = fileName.lastIndexOf('.');
 
-        return fileName.substring(i + 1);
+        return fileName.substring(dotPosition + 1);
     }
 
     private String getSize(MultipartFile file) {
@@ -49,18 +48,11 @@ public class PdfParser {
         return Long.toString(size);
     }
 
-    /*
-    private long getCreationDate() { // PDF не могут быть изменены, так что можно использовать lastModified
-
-        return file.lastModified();
-    }
-    */
-
     private void putFields(Map<String, String> result, String text) {
 
         String[] lines = text.split("\\r?\\n");
 
-        for (String s : lines) {    // Андрей прости но мне было впадлу ВЕЗДЕ регулярки использовать...
+        for (String s : lines) {
             String line = s.trim();
 
             if (line.contains("Имя ") && line.contains("Отчество")) {

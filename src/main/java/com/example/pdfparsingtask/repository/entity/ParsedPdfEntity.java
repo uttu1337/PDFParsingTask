@@ -1,21 +1,33 @@
-package com.example.pdfboxandshit.dto;
+package com.example.pdfparsingtask.repository.entity;
 
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.util.UUID;
 
 @Data
 @Builder
-public class ParsePdfDto {
+@Table(name = "documents")
+@Entity
+@AllArgsConstructor
+@NoArgsConstructor
+public class ParsedPdfEntity {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID id;
 
     private Long fileSize;
-
     private String fileExtension;
 
     private String lastName;
     private String firstName;
     private String patronymic;
+
     private LocalDate birthDate;
     private String taxpayerIdentificationNumber;
     private Integer documentType;

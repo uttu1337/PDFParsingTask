@@ -1,13 +1,13 @@
-package com.example.pdfboxandshit;
+package com.example.pdfparsingtask;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class PdfBoxAndShitApplication {
+public class PdfParsingTaskApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(PdfBoxAndShitApplication.class, args);
+        SpringApplication.run(PdfParsingTaskApplication.class, args);
     }
 
 }

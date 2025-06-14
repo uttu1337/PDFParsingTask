@@ -1,4 +1,4 @@
-package com.example.pdfboxandshit.model;
+package com.example.pdfparsingtask.dto;
 
 import lombok.Builder;
 import lombok.Data;
@@ -7,8 +7,7 @@ import java.time.LocalDate;
 
 @Data
 @Builder
-public class ParsedPdfModel {
-
+public class ParsePdfDto {
 
     private Long fileSize;
 
