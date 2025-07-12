@@ -1,6 +1,6 @@
 package com.example.pdfparsingtask.service.impl;
 
-import com.example.pdfparsingtask.dto.ParsePdfDto;
+import com.example.pdfparsingtask.dto.ParsedPdfDto;
 import com.example.pdfparsingtask.exception.PdfParsingException;
 import com.example.pdfparsingtask.model.ParsedPdfModel;
 import com.example.pdfparsingtask.parser.PdfParser;
@@ -35,16 +35,14 @@ public class PdfServiceImpl implements PdfService {
     }
 
     @Override
-    public ParsePdfDto parsePdf(MultipartFile file) {
+    public ParsedPdfDto parsePdf(MultipartFile file) {
         try {
 
             Map<String, String> parsedMap = pdfParser.parsePdf(file);
+            ParsedPdfModel model = parsedPdfMapper.mapToModel(parsedMap);
+            parsePdfRepository.save(parsedPdfMapper.modelToEntity(model));
 
-            ParsePdfDto dto = parsedPdfMapper.MapToDto(parsedMap);
-            ParsedPdfModel model = parsedPdfMapper.DtoToModel(dto);
-            parsePdfRepository.save(parsedPdfMapper.ModelToEntity(model));
-
-            return dto;
+            return parsedPdfMapper.modelToDto(model);
         } catch (IOException e) {
             throw new PdfParsingException("Encountered an exception while parsing: " + e.getMessage(), e);
         }
