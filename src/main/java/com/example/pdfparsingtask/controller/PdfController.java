@@ -1,8 +1,8 @@
 package com.example.pdfparsingtask.controller;
 
-import com.example.pdfparsingtask.dto.ParsePdfDto;
+import com.example.pdfparsingtask.dto.ParsedPdfDto;
+import com.example.pdfparsingtask.dto.TextDto;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import com.example.pdfparsingtask.service.PdfService;
@@ -15,21 +15,16 @@ public class PdfController {
     private final PdfService pdfService;
 
     @PostMapping("/getText")
-    public ResponseEntity<String> getText(@RequestParam("file") MultipartFile file) {
-        String text = pdfService.getFullText(file);
+    public String getText(@RequestParam("file") MultipartFile file) {
+        TextDto textDto = new TextDto();
+        textDto.setText(pdfService.getFullText(file));
 
-        return ResponseEntity.ok(text);
-    }
-
-    @GetMapping("/test")
-    public ResponseEntity<String> test() {
-
-        return ResponseEntity.ok("Test!");
+        return textDto.getText();
     }
 
     @RequestMapping(value = "/parse", method = RequestMethod.POST)
     @ResponseBody
-    public ParsePdfDto parsePdf(@RequestParam("file") MultipartFile file) {
+    public ParsedPdfDto parsePdf(@RequestParam("file") MultipartFile file) {
 
         return pdfService.parsePdf(file);
     }
