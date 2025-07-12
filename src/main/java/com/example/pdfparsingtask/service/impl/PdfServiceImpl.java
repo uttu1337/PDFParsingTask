@@ -1,10 +1,12 @@
 package com.example.pdfparsingtask.service.impl;
 
-import com.example.pdfparsingtask.dto.ParsePdfDto;
+import com.example.pdfparsingtask.dto.ParsedPdfDto;
+import com.example.pdfparsingtask.dto.TextDto;
 import com.example.pdfparsingtask.exception.PdfParsingException;
 import com.example.pdfparsingtask.model.ParsedPdfModel;
 import com.example.pdfparsingtask.parser.PdfParser;
 import com.example.pdfparsingtask.repository.ParsePdfRepository;
+import com.example.pdfparsingtask.repository.entity.ParsedPdfEntity;
 import lombok.RequiredArgsConstructor;
 import com.example.pdfparsingtask.mapper.ParsedPdfMapper;
 import org.springframework.stereotype.Service;
@@ -25,28 +27,36 @@ public class PdfServiceImpl implements PdfService {
     private final ParsePdfRepository parsePdfRepository;
 
     @Override
-    public String getFullText(MultipartFile file) {
-        try {
+    public TextDto getFullText(MultipartFile file) {
 
-            return pdfParser.getFullText(file);
+        try {
+            TextDto textDto = new TextDto();
+            textDto.setText(pdfParser.getFullText(file));
+
+            return textDto;
         } catch (IOException e) {
             throw new PdfParsingException("Encountered an exception while retrieving text: " + e.getMessage(), e);
         }
     }
 
     @Override
-    public ParsePdfDto parsePdf(MultipartFile file) {
+    public ParsedPdfDto parsePdf(MultipartFile file) {
+
         try {
-
             Map<String, String> parsedMap = pdfParser.parsePdf(file);
+            ParsedPdfModel model = parsedPdfMapper.mapToModel(parsedMap);
+            ParsedPdfModel savedModel = save(model);
 
-            ParsePdfDto dto = parsedPdfMapper.MapToDto(parsedMap);
-            ParsedPdfModel model = parsedPdfMapper.DtoToModel(dto);
-            parsePdfRepository.save(parsedPdfMapper.ModelToEntity(model));
-
-            return dto;
+            return parsedPdfMapper.modelToDto(savedModel);
         } catch (IOException e) {
             throw new PdfParsingException("Encountered an exception while parsing: " + e.getMessage(), e);
         }
+    }
+
+    @Override
+    public ParsedPdfModel save(ParsedPdfModel model) {
+        ParsedPdfEntity savedEntity = parsePdfRepository.save(parsedPdfMapper.modelToEntity(model));
+
+        return parsedPdfMapper.entityToModel(savedEntity);
     }
 }

@@ -9,6 +9,8 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.example.pdfparsingtask.constants.PdfConstants.*;
+
 @Component
 public class PdfParser {
 
@@ -17,8 +19,8 @@ public class PdfParser {
         String text = getFullText(file);
         Map<String, String> result = new HashMap<>();
 
-        result.put("fileExtension", getExtension(file));
-        result.put("fileSize", getSize(file));
+        result.put(FILE_EXTENSION_FIELD, getExtension(file));
+        result.put(FILE_SIZE_FIELD, getSize(file));
         putFields(result, text);
 
         return result;
@@ -36,7 +38,7 @@ public class PdfParser {
     private String getExtension(MultipartFile file) {
 
         String fileName = file.getOriginalFilename();
-        int dotPosition = fileName.lastIndexOf('.');
+        int dotPosition = fileName.lastIndexOf(DOT);
 
         return fileName.substring(dotPosition + 1);
     }
@@ -50,75 +52,108 @@ public class PdfParser {
 
     private void putFields(Map<String, String> result, String text) {
 
-        String[] lines = text.split("\\r?\\n");
+        String[] lines = text.split(LINE_BREAK_REGEX);
 
         for (String s : lines) {
             String line = s.trim();
 
-            if (line.contains("Имя ") && line.contains("Отчество")) {
+            if (line.contains(NAME_SUBSTRING) && line.contains(PATRONYMIC_SUBSTRING)) {
 
-                String[] parts = line.split(" ");
-
-                result.put("lastName", parts[1]);
-                result.put("firstName", parts[3]);
-
-                if (parts.length > 4) {
-
-                    result.put("patronymic", parts[6]); // 6 чтоб скипнуть "*"
-                }
-
+                putName(result, line);
             }
 
-            if (line.contains("Дата рождения")) {
+            if (line.contains(BIRTH_DATE_SUBSTRING)) {
 
-                int start = line.indexOf("Дата рождения") + "Дата рождения".length();
-                int end = line.indexOf("Гражданство");
-
-                if (start > 0 && end > start) {
-
-                    String birthDateRaw = line.substring(start, end).replaceAll("\\s", "");
-                    result.put("birthDate", birthDateRaw);
-                }
+                putBirthDate(result, line);
             }
 
-            if (line.startsWith("ИНН в Российской Федерации")) {
+            if (line.startsWith(TAXPAYER_IDENTIFICATION_NUMBER_SUBSTRING)) {
 
-                result.put("taxpayerIdentificationNumber", line.replace("ИНН в Российской Федерации ", "").trim());
+                putTaxpayerIdentificationNumber(result, line);
             }
 
-            if (line.startsWith("Код документа, удостоверяющего личность:")) {
+            if (line.startsWith(DOCUMENT_TYPE_SUBSTRING)) {
 
-                String[] partsOfDocument = line.replace("Код документа, удостоверяющего личность:", "")
-                        .split("Серия и номер документа ");
-
-                if (partsOfDocument.length == 2) {
-
-                    result.put("documentType", partsOfDocument[0].trim());
-                    result.put("seriesAndNumber", partsOfDocument[1].replaceAll("\\s", "").trim());
-                }
+                putDocumentTypeSeriesAndNumber(result, line);
             }
 
-            if (line.startsWith("Сертификат:")) {
+            if (line.startsWith(CERTIFICATE_SUBSTRING)) {
 
-                result.put("eSignatureValue", line.replace("Сертификат: ", "").trim());
+                putESignatureValue(result, line);
             }
 
-            if (line.startsWith("Владелец:")) {
+            if (line.startsWith(OWNER_SUBSTRING)) {
 
-                result.put("eSignatureOwner", line.replace("Владелец: ", "").trim());
+                putESignatureOwner(result, line);
             }
 
-            if (line.startsWith("Действителен: с")) {
+            if (line.startsWith(PRODUCTION_DATE_SUBSTRING)) {
 
-                String[] partsOfDates = line.replace("Действителен: с", "")
-                        .split("по");
-
-                if (partsOfDates.length == 2) {
-
-                    result.put("productionDate", partsOfDates[0].trim());
-                    result.put("expirationDate", partsOfDates[1].trim());
-                }
+                putProductionAndExpirationDate(result, line);
             }
+        }
+    }
+
+    private void putName(Map<String, String> result, String line) {
+        String[] parts = line.split(SPACE);
+
+        result.put(LAST_NAME_FIELD, parts[1]);
+        result.put(FIRST_NAME_FIELD, parts[3]);
+
+        if (parts.length > 4) {
+
+            result.put(PATRONYMIC_FIELD, parts[6]); // 6 чтоб скипнуть "*"
+        }
+
+    }
+
+    private void putBirthDate(Map<String, String> result, String line) {
+
+        int start = line.indexOf(BIRTH_DATE_SUBSTRING) + BIRTH_DATE_SUBSTRING.length();
+        int end = line.indexOf(CITIZENSHIP_SUBSTRING);
+
+        if (start > 0 && end > start) {
+
+            String birthDateRaw = line.substring(start, end).replaceAll(WHITESPACE_REGEX, NOTHING);
+            result.put(BIRTH_DATE_FIELD, birthDateRaw);
+        }
+    }
+
+    private void putTaxpayerIdentificationNumber(Map<String, String> result, String line) {
+
+        result.put(TAXPAYER_IDENTIFICATION_NUMBER_FIELD, line.replace(TAXPAYER_IDENTIFICATION_NUMBER_SUBSTRING + SPACE, NOTHING).trim());
+    }
+
+    private void putDocumentTypeSeriesAndNumber(Map<String, String> result, String line) {
+
+        String[] partsOfDocument = line.replace(DOCUMENT_TYPE_SUBSTRING + COLON, NOTHING)
+                .split(DOCUMENT_SERIES_AND_NUMBER_SUBSTRING + SPACE);
+
+        if (partsOfDocument.length == 2) {
+
+            result.put(DOCUMENT_TYPE_FIELD, partsOfDocument[0].trim());
+            result.put(SERIES_AND_NUMBER_FIELD, partsOfDocument[1].replaceAll(WHITESPACE_REGEX, NOTHING).trim());
+        }
+    }
+
+    private void putESignatureValue(Map<String, String> result, String line) {
+
+        result.put(E_SIGNATURE_VALUE_FIELD, line.replace(CERTIFICATE_SUBSTRING + COLON + SPACE, NOTHING).trim());
+    }
+
+    private void putESignatureOwner(Map<String, String> result, String line) {
+
+        result.put(E_SIGNATURE_OWNER_FIELD, line.replace(OWNER_SUBSTRING + COLON + SPACE, NOTHING).trim());
+    }
+
+    private void putProductionAndExpirationDate(Map<String, String> result, String line) {
+        String[] partsOfDates = line.replace(PRODUCTION_DATE_SUBSTRING, NOTHING)
+                .split(UNTIL_SUBSTRING);
+
+        if (partsOfDates.length == 2) {
+
+            result.put(PRODUCTION_DATE_FIELD, partsOfDates[0].trim());
+            result.put(EXPIRATION_DATE_FIELD, partsOfDates[1].trim());
         }
     }
 }
