@@ -1,6 +1,6 @@
 package com.example.pdfparsingtask.mapper;
 
-import com.example.pdfparsingtask.dto.ParsePdfDto;
+import com.example.pdfparsingtask.dto.ParsedPdfDto;
 import com.example.pdfparsingtask.model.ParsedPdfModel;
 import com.example.pdfparsingtask.repository.entity.ParsedPdfEntity;
 
@@ -8,9 +8,11 @@ import java.util.Map;
 
 public interface ParsedPdfMapper {
 
-    ParsePdfDto MapToDto(Map<String, String> map);
+    ParsedPdfModel mapToModel(Map<String, String> map);
 
-    ParsedPdfModel DtoToModel(ParsePdfDto dto);
+    ParsedPdfDto modelToDto(ParsedPdfModel pdfModel);
 
-    ParsedPdfEntity ModelToEntity(ParsedPdfModel model);
+    ParsedPdfEntity modelToEntity(ParsedPdfModel model);
+
+    ParsedPdfModel entityToModel(ParsedPdfEntity entity);
 }

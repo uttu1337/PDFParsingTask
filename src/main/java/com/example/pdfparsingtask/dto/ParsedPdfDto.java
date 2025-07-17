@@ -7,7 +7,7 @@ import java.time.LocalDate;
 
 @Data
 @Builder
-public class ParsePdfDto {
+public class ParsedPdfDto {
 
     private Long fileSize;
 
